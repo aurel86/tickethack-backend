@@ -35,10 +35,10 @@ router.post('/', (req, res) => {
 
 })
 
-router.post('/', (req, res) => { 
-  Cart.findOne().then(data => {
+router.get('/', (req, res) => { 
+  Trip.findOne().then(data => {
     console.log(data);
-    res.json({ })
+    res.json({ trips: data})
   })
 
 })
