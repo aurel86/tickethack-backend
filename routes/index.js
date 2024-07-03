@@ -5,10 +5,10 @@ const Trip = require('../models/trips');
 const Cart = require('../models/carts');
 /* GET home page. */
 
-router.post('/', (req, res) => {
-  const departure = req.body.departure; 
-  const arrival = req.body.arrival; 
-  const departureDate = req.body.departureDate;
+router.get('/trips/:departure/:arrival/:departureDate', (req, res) => {
+  const departure = req.params.departure; 
+  const arrival = req.params.arrival; 
+  const departureDate = req.params.departureDate;
 
   if (!departure || !arrival || !departureDate) { 
       return res.json({ result: false, error: "Les champs de départ et d'arrivée et dates sont obligatoires" });
@@ -19,7 +19,7 @@ router.post('/', (req, res) => {
   
   Trip.find({
     departure: {$regex: new RegExp(departure, "i") },
-    arrival: { $regex: new RexExp(arrival, "i") },
+    arrival: { $regex: new RegExp(arrival, "i") },
     date: {
       $gte: fromDate,
       $lte: toDate
@@ -31,17 +31,39 @@ router.post('/', (req, res) => {
     } else {
                   res.json({ result: false, error: "Aucun trajet trouvé" });
     }
+    
+  })
+  
 })
 
-})
 
-router.get('/', (req, res) => { 
-  Trip.findOne().then(data => {
-    console.log(data);
-    res.json({ trips: data})
+router.post('/carts', (req, res) => {
+  const newTrip = new Trip ({
+    departure:req.body.departure,
+    arrival: req.body.arrival,
+    date: req.body.date,
+    price: req.body.price,
+  });
+  newTrip.save().then(() => {
+    res.json({ result: true});
   })
 
-})
+  });
+  router.get('/carts', (req, res) => {
+    Cart.find().then(data => {
+      res.json({ allCartItem: data});
+    });
+  });
+  
+  router.delete('/carts', (req, res) => {
+    Cart.deleteOne().then(data => {
+      res.json({result: true})
+      })
+    })
+  
+
+
+
 
 
 
